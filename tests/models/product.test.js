@@ -141,7 +141,7 @@ describe('Product Model', () => {
     test('should find a product by availability', async () => {
         const products = await ProductFactory.createList(10);
         const product = products[0].available;
-        const count = products.filter(p => p.available).length;
+        const count = products.filter(p => p.available === product).length;
 
         const productList = await Product.findByAvailability(product);
 

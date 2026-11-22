@@ -9,32 +9,72 @@ const router = express.Router();
  * Health check endpoint
  */
 router.get('/health', (req, res) => {
-  res.status(200).json({ status: 200, message: 'OK' });
+    res.status(200).json({ status: 200, message: 'OK' });
 });
 
 /**
  * CREATE A NEW PRODUCT
  */
 router.post('/', checkContentType('application/json'), validateProduct, async (req, res) => {
-  try {
+    try {
 
-    
-    const product = await Product.create(req.body);
 
-    
-    const location = `/api/products/${product.id}`;
-    res.status(201)
-       .location(location)
-       .json(product.serialize());
-       
-  } catch (error) {
+        const product = await Product.create(req.body);
 
-    res.status(400).json({ 
-      error: 'Bad Request', 
-      message: error.message 
-    });
-  }
+
+        const location = `/api/products/${product.id}`;
+        res.status(201)
+            .location(location)
+            .json(product.serialize());
+
+    } catch (error) {
+
+        res.status(400).json({
+            error: 'Bad Request',
+            message: error.message
+        });
+    }
 });
 
+router.get('/:id', async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = await Product.findByPk(productId);
+
+        if (product) {
+            return res.status(200).json(product.serialize());
+        }
+        else {
+            return res.status(404).json({ error: "Not Found" });
+        }
+
+
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Internal Server Error',
+        });
+    }
+})
+
+router.put('/:id', checkContentType('application/json'), validateProduct, async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = req.body;
+        const dbProduct = await Product.findByPk(productId);
+
+        if (dbProduct) {
+            const updatedProduct = await dbProduct.update(product);
+            return res.status(200)
+            .json(updatedProduct.serialize());
+        } else {
+            return res.status(404).json({ error: "Not Found" });
+        }
+
+    } catch (error) {
+        return res.status(500).json({
+            error: 'Internal Server Error',
+        });
+    }
+})
 
 module.exports = router;
