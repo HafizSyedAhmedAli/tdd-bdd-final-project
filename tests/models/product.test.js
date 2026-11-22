@@ -122,4 +122,45 @@ describe('Product Model', () => {
         expect(productList.length).toBe(5);
     })
 
+
+    test('should find a product by name', async () => {
+        const products = await ProductFactory.createList(5);
+
+        const product = products[0].name;
+        
+        const count = products.filter(p => p.name === product).length;
+
+        const productList = await Product.findByName(product);
+
+        expect(productList.length).toBe(count);
+        productList.forEach((p) => {
+            expect(p.name).toBe(product);
+        })
+    })
+
+    test('should find a product by availability', async () => {
+        const products = await ProductFactory.createList(10);
+        const product = products[0].available;
+        const count = products.filter(p => p.available).length;
+
+        const productList = await Product.findByAvailability(product);
+
+        expect(productList.length).toBe(count);
+        productList.forEach(p => {
+            expect(p.available).toBe(product);
+        })
+    })
+
+    test('should find a product by category', async () => {
+        const products = await ProductFactory.createList(10);
+        const category = products[0].category;
+        const count = products.filter(p => p.category === category).length;
+
+        const productList = await Product.findByCategory(category);
+
+        expect(productList.length).toBe(count);
+        productList.forEach(p => {
+            expect(p.category).toBe(category);
+        })
+    })
 });
